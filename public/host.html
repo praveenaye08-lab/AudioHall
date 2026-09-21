@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0d0f11">
+  <title>AetherMic • Master Audio Receiver Console</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/host.css">
+</head>
+<body>
+  <!-- Master Console Container -->
+  <div class="host-chassis">
+    <!-- Hardware Rack Header -->
+    <header class="rack-header">
+      <div class="rack-brand">
+        <div class="rack-brand-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+          </svg>
+        </div>
+        <div class="rack-brand-info">
+          <div class="rack-title">AETHERMIC // MASTER RX-500</div>
+          <div class="rack-sub">CENTRAL LECTURE HALL AUDIO RECEIVER & TRANSMITTER CONTROLLER</div>
+        </div>
+      </div>
+
+      <div class="rack-telemetry">
+        <div class="telemetry-badge">
+          <div class="status-lamp" id="hostStatusDot"></div>
+          <span id="hostStatusText">SERVER ONLINE</span>
+        </div>
+        <div class="telemetry-badge amber" id="studentCountBadge">
+          0 OPERATORS ONLINE
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Rackmount Layout -->
+    <main class="rack-grid">
+      <!-- Left Column: Master Stage, Spectrum Analyzer & Controls -->
+      <div class="col-master">
+        <!-- Audio Autoplay Unlock Warning -->
+        <div class="rack-unit audio-init-unit" id="audioInitBanner">
+          <div class="init-text">
+            <h3>AUDIO ENGINE STANDBY // AWAITING OPERATOR INPUT</h3>
+            <p>Classroom speakers require user interaction to authorize audio playback.</p>
+          </div>
+          <button class="hardware-action-btn" id="audioInitBtn" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            <span>ACTIVATE AUDIO OUTPUT</span>
+          </button>
+        </div>
+
+        <!-- Master Transmission Channel Annunciator & Active Speaker Stage -->
+        <div class="rack-unit stage-unit">
+          <div class="unit-top-bar">
+            <div class="unit-tag">
+              <span class="screw-head"></span>
+              <span>CHANNEL 01 // MASTER TRANSMISSION STAGE</span>
+            </div>
+            <button class="force-release-btn" id="overrideBtn" type="button" style="display: none;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="15" y1="9" x2="9" y2="15"/>
+                <line x1="9" y1="9" x2="15" y2="15"/>
+              </svg>
+              <span>FORCE CUT LINE</span>
+            </button>
+          </div>
+
+          <div class="speaker-stage-surface" id="speakerStage">
+            <!-- Studio ON AIR Box -->
+            <div class="on-air-box" id="onAirBox">
+              <span class="on-air-text">ON AIR</span>
+            </div>
+
+            <!-- Speaker Identification -->
+            <div class="speaker-info-block">
+              <div class="speaker-label">ACTIVE TRANSMITTER:</div>
+              <h2 class="speaker-callsign" id="speakerName">CHANNEL IDLE</h2>
+              <div class="speaker-telemetry" id="speakerMeta">Awaiting student transmission lock...</div>
+            </div>
+
+            <!-- Transmission Timer -->
+            <div class="speaker-timer-block">
+              <div class="timer-label">ELAPSED TIME</div>
+              <div class="speaker-timer" id="speakerTimer">00:00</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-Time Audio Spectrum Analyzer & 30-Bar VU Meter -->
+        <div class="rack-unit">
+          <div class="unit-top-bar">
+            <div class="unit-tag">
+              <span class="screw-head"></span>
+              <span>SPECTRUM ANALYZER & VU LEVEL METER</span>
+            </div>
+            <span class="unit-meta-pill">16.0 kHz LINEAR PCM</span>
+          </div>
+
+          <div class="visualizer-chassis">
+            <div class="canvas-holder">
+              <canvas id="audioVisualizer"></canvas>
+            </div>
+
+            <!-- 30-Bar Segmented VU Peak Meter -->
+            <div class="vu-module">
+              <div class="vu-top-row">
+                <span class="vu-label">PEAK AMPLITUDE</span>
+                <span class="vu-db-readout" id="vuMeterVal">-INF dB</span>
+              </div>
+              <div class="vu-meter-housing">
+                <div class="vu-segments-track" id="hostVuTrack">
+                  <!-- 30 segments injected via host.js -->
+                </div>
+              </div>
+              <div class="vu-legend">
+                <span>-40</span>
+                <span>-30</span>
+                <span>-20</span>
+                <span>-12</span>
+                <span>-6</span>
+                <span class="legend-zero">0</span>
+                <span class="legend-clip">+6 dB</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audio Output Master Controls -->
+        <div class="rack-unit">
+          <div class="unit-top-bar">
+            <div class="unit-tag">
+              <span class="screw-head"></span>
+              <span>AUDIO RECEIVER MASTER GAIN</span>
+            </div>
+          </div>
+          <div class="controls-deck">
+            <div class="slider-block">
+              <div class="slider-head">
+                <span>MASTER OUTPUT VOLUME</span>
+                <span class="slider-val" id="volumeValueLabel">100%</span>
+              </div>
+              <input type="range" class="hardware-slider" id="volumeSlider" min="0" max="200" value="100" step="1">
+            </div>
+            <button class="hardware-mute-btn" id="muteToggleBtn" type="button">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+              </svg>
+              <span>MUTE AUDIO</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Lecture Transmission History Audit Log -->
+        <div class="rack-unit">
+          <div class="unit-top-bar">
+            <div class="unit-tag">
+              <span class="screw-head"></span>
+              <span>TRANSMISSION AUDIT LOG</span>
+            </div>
+            <button class="hardware-clear-btn" id="clearLogBtn" type="button">PURGE LOG</button>
+          </div>
+          <div class="history-container">
+            <div class="history-list" id="historyList">
+              <div class="history-empty" id="historyEmpty">NO TRANSMISSIONS RECORDED DURING THIS SESSION</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Student QR Code & Setup Guide -->
+      <div class="col-aux">
+        <!-- Student Access QR Code Card -->
+        <div class="rack-unit qr-unit">
+          <div class="unit-top-bar">
+            <div class="unit-tag">
+              <span class="screw-head"></span>
+              <span>STUDENT QUICK CONNECT</span>
+            </div>
+          </div>
+          <p class="aux-desc">
+            Project this high-contrast QR code on the lecture display. Students scan with their phones to access the transmitter.
+          </p>
+          <div class="qr-well">
+            <img id="qrImage" src="" alt="Student QR Code" />
+          </div>
+          <div class="url-display" id="studentUrlText">https://localhost:3000/student</div>
+          <button class="hardware-copy-btn" id="copyUrlBtn" type="button">
+            <span>COPY LINK TO CLIPBOARD</span>
+          </button>
+        </div>
+
+        <!-- Mobile SSL & Network Instructions -->
+        <div class="rack-unit guide-unit">
+          <div class="unit-top-bar">
+            <div class="unit-tag">
+              <span class="screw-head"></span>
+              <span>MOBILE BROWSER SSL GUIDE</span>
+            </div>
+          </div>
+          <p class="aux-desc">
+            Modern mobile operating systems require HTTPS for Wi-Fi microphone streaming:
+          </p>
+          <div class="guide-steps">
+            <div class="guide-item">
+              <div class="item-num">01</div>
+              <div class="item-text">
+                <strong>Apple Safari (iOS):</strong> Tap <em>"Show Details"</em> at the bottom, then tap <em>"visit this website"</em>.
+              </div>
+            </div>
+            <div class="guide-item">
+              <div class="item-num">02</div>
+              <div class="item-text">
+                <strong>Google Chrome (Android):</strong> Tap <em>"Advanced"</em>, then tap <em>"Proceed to IP (unsafe)"</em>.
+              </div>
+            </div>
+            <div class="guide-item">
+              <div class="item-num">03</div>
+              <div class="item-text">
+                <strong>Hardware Prompt:</strong> Tap <em>"Allow Microphone"</em> when prompted by the operating system.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/audio-processor.js"></script>
+  <script src="/js/host.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# SSL Certificates (Auto-generated per host machine)
+ssl/
+
+# Environment and OS files
+.env
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0d0f11">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>AetherMic • Student Audio Transmitter</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/student.css">
+</head>
+<body>
+  <!-- Industrial Console Chassis -->
+  <div class="chassis">
+    <!-- Console Header / Hardware Top Bar -->
+    <header class="console-header">
+      <div class="brand-group">
+        <div class="brand-badge">
+          <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-title">AETHERMIC</div>
+          <div class="brand-spec">TR-100 // TX STATION</div>
+        </div>
+      </div>
+
+      <!-- Header Operator Identity Pill & Connection LED -->
+      <div class="header-right">
+        <div class="operator-pill" id="operatorPill">
+          <span class="operator-label">OP:</span>
+          <span class="operator-name" id="headerOperatorName">Authenticating...</span>
+          <button class="pill-edit-btn" id="editNameBtn" type="button" aria-label="Edit Name">EDIT</button>
+        </div>
+        <div class="hardware-led-group">
+          <div class="hardware-led" id="rfStatusLed" title="RF Link Status"></div>
+          <span class="led-label" id="rfStatusLabel">STANDBY</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Control Surface -->
+    <main class="control-surface">
+      <!-- Top Hardware Rack Strip: Mode Selector & Telemetry -->
+      <section class="rack-strip">
+        <div class="station-meta">
+          <span class="meta-label">STATION CHANNEL</span>
+          <span class="meta-value">CH-01 // 16kHz PCM</span>
+        </div>
+
+        <div class="mode-selector" role="radiogroup" aria-label="PTT Trigger Mode">
+          <button class="mode-switch active" id="modeHold" type="button" role="radio" aria-checked="true">
+            <span class="switch-bezel"></span>
+            <span class="switch-title">MOMENTARY</span>
+            <span class="switch-desc">HOLD</span>
+          </button>
+          <button class="mode-switch" id="modeToggle" type="button" role="radio" aria-checked="false">
+            <span class="switch-bezel"></span>
+            <span class="switch-title">LATCHED</span>
+            <span class="switch-desc">TAP</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Broadcast Annunciator Status Banner -->
+      <section class="annunciator-banner ready" id="statusBanner" aria-live="polite">
+        <div class="annunciator-lamp" id="statusLamp">
+          <div class="lamp-core"></div>
+        </div>
+        <div class="annunciator-info">
+          <div class="annunciator-headline" id="statusTitle">CHANNEL CLEAR // READY</div>
+          <div class="annunciator-sub" id="statusSubtitle">Hold or tap the tactile switch to transmit voice to the hall</div>
+        </div>
+        <div class="annunciator-tag" id="statusTag">IDLE</div>
+      </section>
+
+      <!-- Center PTT Mic Section -->
+      <section class="ptt-assembly" id="micSection">
+        <!-- Circular Milled Chassis Housing -->
+        <div class="ptt-bezel-rim">
+          <div class="ptt-sunken-well">
+            <!-- Hardware PTT Button -->
+            <button class="ptt-hardware-button" id="pttButton" type="button" aria-label="Push to talk button">
+              <!-- Upward Studio Broadcast / Transmission Glyph -->
+              <div class="ptt-glyph-chassis">
+                <svg class="ptt-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                  <line x1="12" y1="19" x2="12" y2="23"/>
+                  <line x1="8" y1="23" x2="16" y2="23"/>
+                  <!-- Upward transmission chevron waves -->
+                  <path d="M5 4l7-3 7 3" stroke-width="1.5" stroke-dasharray="1 1"/>
+                </svg>
+              </div>
+
+              <!-- Button Typography & Etched State -->
+              <div class="ptt-readout">
+                <span class="ptt-primary-text" id="pttText">HOLD TO TALK</span>
+                <span class="ptt-secondary-text" id="pttSubtext">PRESS & HOLD SWITCH</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Hardware Segmented LED VU Meter -->
+        <div class="meter-module" id="studentVuWrapper">
+          <div class="meter-header">
+            <span class="meter-title">VU LEVEL // TRANSMISSION PEAK</span>
+            <span class="meter-clock" id="liveTimer">00:00</span>
+          </div>
+
+          <div class="meter-chassis">
+            <div class="led-segments" id="ledSegments">
+              <!-- 24 Discrete Hardware LED Segments injected by JS -->
+            </div>
+          </div>
+
+          <div class="meter-scale">
+            <span>-30</span>
+            <span>-20</span>
+            <span>-12</span>
+            <span>-6</span>
+            <span>-3</span>
+            <span class="scale-zero">0</span>
+            <span class="scale-clip">+3 dB</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Hardware Chassis Footer / Status Guide -->
+      <footer class="console-footer">
+        <div class="footer-spec-item">
+          <span class="spec-bullet"></span>
+          <span>AUDIO ENGINE: 16.0 kHz LOW-LATENCY MONO PCM</span>
+        </div>
+        <div class="footer-spec-item">
+          <span class="spec-bullet"></span>
+          <span>DIRECT MONITORING: MUTED (LOCAL FEEDBACK PROTECTION)</span>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Operator Onboarding / Call Sign Modal (Pre-Transmission Gate) -->
+  <div class="industrial-modal-backdrop" id="onboardingModal" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
+    <div class="industrial-modal-panel">
+      <div class="modal-corner-accent top-left"></div>
+      <div class="modal-corner-accent top-right"></div>
+      <div class="modal-corner-accent bottom-left"></div>
+      <div class="modal-corner-accent bottom-right"></div>
+
+      <div class="modal-header-strip">
+        <div class="modal-indicator-led"></div>
+        <span class="modal-strip-title">SECURITY GATE // TERMINAL ENROLLMENT</span>
+      </div>
+
+      <div class="modal-content">
+        <h2 class="modal-title" id="onboardingTitle">OPERATOR IDENTIFICATION</h2>
+        <p class="modal-subtitle">
+          Register your call sign before transmitting audio to the hall. This identity is logged on the professor's dashboard.
+        </p>
+
+        <form id="onboardingForm" class="onboarding-form" onsubmit="return false;">
+          <div class="form-group">
+            <label for="inputOperatorName" class="form-label">OPERATOR NAME</label>
+            <input 
+              type="text" 
+              id="inputOperatorName" 
+              class="hardware-input" 
+              placeholder="e.g. Sarah Jenkins" 
+              maxlength="28" 
+              autocomplete="name"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="inputOperatorSeat" class="form-label">SEAT / ROLL NO (OPTIONAL)</label>
+            <input 
+              type="text" 
+              id="inputOperatorSeat" 
+              class="hardware-input" 
+              placeholder="e.g. Row 3, Seat 14" 
+              maxlength="20"
+            >
+          </div>
+
+          <div class="modal-actions">
+            <button type="submit" class="hardware-submit-btn" id="confirmIdentityBtn">
+              <span>AUTHENTICATE & ENTER STATION</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Microphone Hardware Permission Dialog -->
+  <div class="industrial-modal-backdrop" id="permModal" role="dialog" aria-modal="true" aria-labelledby="permTitle">
+    <div class="industrial-modal-panel">
+      <div class="modal-header-strip">
+        <div class="modal-indicator-led warn"></div>
+        <span class="modal-strip-title">INPUT DEVICE AUTHORIZATION</span>
+      </div>
+
+      <div class="modal-content">
+        <h2 class="modal-title" id="permTitle">MICROPHONE ACCESS REQUIRED</h2>
+        <p class="modal-subtitle">
+          Modern mobile browsers require hardware authorization over Wi-Fi to capture audio. Please tap below to authorize the local transmitter.
+        </p>
+        <button class="hardware-submit-btn" id="grantPermBtn" type="button">
+          <span>GRANT MICROPHONE PERMISSION</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/audio-processor.js"></script>
+  <script src="/js/student.js"></script>
+</body>
+</html>

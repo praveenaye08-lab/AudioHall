@@ -1,0 +1,876 @@
+/* ==========================================================================
+   AETHERMIC // MASTER RX-500 HOST RECEIVER CONSOLE
+   Industrial Studio Hardware Theme
+   Strict Studio Palette: Charcoal, Gunmetal Slate, Studio Amber, Studio Red
+   ========================================================================== */
+
+:root {
+  /* Matte Hardware Chassis Bases */
+  --chassis-black: #0d0f11;
+  --chassis-charcoal: #16191d;
+  --surface-gunmetal: #21262d;
+  --surface-slate: #2a3038;
+  --surface-raised: #323943;
+  --border-metal: #30363d;
+  --border-metal-highlight: #3e4651;
+  --border-dark: #121518;
+
+  /* Studio Telemetry Accents */
+  --amber-studio: #f59e0b;
+  --amber-studio-warm: #e5a93c;
+  --amber-dim: #784805;
+  --amber-glow: rgba(245, 158, 11, 0.28);
+
+  --red-studio: #ef4444;
+  --red-crimson: #dc2626;
+  --red-deep: #7f1d1d;
+  --red-glow: rgba(239, 68, 68, 0.32);
+
+  --green-led: #22c55e;
+  --green-led-glow: rgba(34, 197, 94, 0.35);
+
+  /* Typography */
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --text-amber: #fbbf24;
+  --text-red: #fca5a5;
+
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Monaco, monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--chassis-black);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Master Chassis */
+.host-chassis {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--chassis-charcoal);
+  min-height: 100vh;
+}
+
+/* Hardware Rack Header */
+.rack-header {
+  padding: 1rem 2rem;
+  background: linear-gradient(180deg, #1f252d 0%, #16191e 100%);
+  border-bottom: 2px solid var(--border-dark);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.rack-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.rack-brand-badge {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(145deg, #2b323c, #191c21);
+  border: 1px solid var(--border-metal-highlight);
+  border-radius: 8px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 3px 6px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rack-brand-badge svg {
+  width: 22px;
+  height: 22px;
+  stroke: var(--amber-studio);
+}
+
+.rack-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+}
+
+.rack-sub {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  margin-top: 0.15rem;
+}
+
+.rack-telemetry {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.telemetry-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #111417;
+  border: 1px solid var(--border-metal);
+  border-radius: 6px;
+  padding: 0.4rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.telemetry-badge.amber {
+  color: var(--amber-studio);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.status-lamp {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green-led);
+  box-shadow: 0 0 8px var(--green-led-glow);
+}
+
+/* ==========================================================================
+   Main Rackmount Grid
+   ========================================================================== */
+.rack-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 1.5rem;
+  padding: 1.75rem 2rem;
+  max-width: 1560px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media (max-width: 1120px) {
+  .rack-grid {
+    grid-template-columns: 1fr;
+    padding: 1.25rem;
+  }
+}
+
+.col-master {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.col-aux {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Modular Rack Unit Frame */
+.rack-unit {
+  background: #191d23;
+  border: 1px solid var(--border-metal);
+  border-radius: 10px;
+  padding: 1.35rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.unit-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.15rem;
+  border-bottom: 1px solid #282f38;
+  padding-bottom: 0.65rem;
+}
+
+.unit-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+.screw-head {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3a424e;
+  border: 1px solid #14171a;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.8);
+}
+
+.unit-meta-pill {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--amber-studio);
+  letter-spacing: 0.05em;
+  background: #101317;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-metal);
+}
+
+/* Audio Init Autoplay Banner */
+.audio-init-unit {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), #1a1e25 60%);
+  border-color: rgba(245, 158, 11, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.init-text h3 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-amber);
+  letter-spacing: 0.04em;
+}
+
+.init-text p {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin-top: 0.2rem;
+}
+
+.hardware-action-btn {
+  background: linear-gradient(180deg, #e5a93c 0%, #c4831f 100%);
+  color: #0b0d10;
+  border: 1px solid #f59e0b;
+  border-radius: 6px;
+  padding: 0.65rem 1.15rem;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: transform 0.12s, filter 0.15s;
+  white-space: nowrap;
+}
+
+.hardware-action-btn:hover {
+  filter: brightness(1.08);
+}
+
+.hardware-action-btn:active {
+  transform: translateY(2px);
+}
+
+/* ==========================================================================
+   Master Transmission Channel & Active Speaker Stage
+   ========================================================================== */
+.stage-unit {
+  background: #171b21;
+}
+
+.speaker-stage-surface {
+  background: #0f1216;
+  border: 2px solid var(--border-metal);
+  border-radius: 8px;
+  padding: 1.5rem 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  box-shadow: inset 0 4px 14px rgba(0, 0, 0, 0.85);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Stage Active Transmission State */
+.speaker-stage-surface.active {
+  border-color: var(--red-studio);
+  background: radial-gradient(circle at 15% 50%, rgba(220, 38, 38, 0.18), #111419 65%);
+  box-shadow: 0 0 35px var(--red-glow), inset 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+
+/* Studio ON AIR Annunciator Light */
+.on-air-box {
+  width: 96px;
+  height: 52px;
+  border-radius: 6px;
+  background: #1a1e24;
+  border: 2px solid #323a46;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8);
+  transition: all 0.25s ease;
+}
+
+.on-air-text {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: #4b5563;
+  transition: all 0.25s ease;
+}
+
+.speaker-stage-surface.active .on-air-box {
+  background: var(--red-crimson);
+  border-color: #f87171;
+  box-shadow: 0 0 20px var(--red-glow), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  animation: on-air-flash 1.4s infinite ease-in-out;
+}
+
+.speaker-stage-surface.active .on-air-text {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+@keyframes on-air-flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.75; }
+}
+
+/* Speaker Name & Info */
+.speaker-info-block {
+  flex: 1;
+  min-width: 0;
+}
+
+.speaker-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+
+.speaker-callsign {
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin-top: 0.15rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.speaker-stage-surface.active .speaker-callsign {
+  color: #fff;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.35);
+}
+
+.speaker-telemetry {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.speaker-stage-surface.active .speaker-telemetry {
+  color: var(--text-red);
+}
+
+/* Timer */
+.speaker-timer-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.timer-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+}
+
+.speaker-timer {
+  font-family: var(--font-mono);
+  font-size: 2.1rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--amber-studio);
+  line-height: 1.1;
+  margin-top: 0.2rem;
+}
+
+.speaker-stage-surface.active .speaker-timer {
+  color: var(--red-studio);
+  text-shadow: 0 0 14px var(--red-glow);
+}
+
+/* Force Cut Line Override Button */
+.force-release-btn {
+  background: rgba(220, 38, 38, 0.15);
+  border: 1px solid var(--red-studio);
+  color: #fca5a5;
+  border-radius: 6px;
+  padding: 0.4rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: all 0.15s ease;
+}
+
+.force-release-btn:hover {
+  background: var(--red-studio);
+  color: #fff;
+  box-shadow: 0 0 12px var(--red-glow);
+}
+
+/* ==========================================================================
+   Spectrum Analyzer & 30-Bar Segmented VU Meter
+   ========================================================================== */
+.visualizer-chassis {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.canvas-holder {
+  width: 100%;
+  height: 180px;
+  background: #090b0e;
+  border-radius: 8px;
+  border: 1px solid var(--border-metal);
+  box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.9);
+  position: relative;
+  overflow: hidden;
+}
+
+canvas#audioVisualizer {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* 30-Bar Segmented VU Peak Meter */
+.vu-module {
+  background: #0f1216;
+  border: 1px solid var(--border-metal);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.7);
+}
+
+.vu-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.vu-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+.vu-db-readout {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--amber-studio);
+  letter-spacing: 0.05em;
+}
+
+.vu-meter-housing {
+  background: #07090b;
+  border: 1px solid #1d222a;
+  border-radius: 4px;
+  padding: 4px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.95);
+}
+
+.vu-segments-track {
+  display: flex;
+  gap: 3px;
+  height: 14px;
+  width: 100%;
+}
+
+.host-led-seg {
+  flex: 1;
+  height: 100%;
+  border-radius: 1px;
+  transition: background-color 0.04s ease, box-shadow 0.04s ease;
+}
+
+.host-led-seg.green {
+  background-color: #101c13;
+  border: 1px solid #080f0a;
+}
+.host-led-seg.green.lit {
+  background-color: var(--green-led);
+  box-shadow: 0 0 6px var(--green-led-glow);
+  border-color: #4ade80;
+}
+
+.host-led-seg.amber {
+  background-color: #211809;
+  border: 1px solid #110c04;
+}
+.host-led-seg.amber.lit {
+  background-color: var(--amber-studio);
+  box-shadow: 0 0 6px var(--amber-glow);
+  border-color: #fde047;
+}
+
+.host-led-seg.red {
+  background-color: #250d0f;
+  border: 1px solid #130607;
+}
+.host-led-seg.red.lit {
+  background-color: var(--red-studio);
+  box-shadow: 0 0 8px var(--red-glow);
+  border-color: #f87171;
+}
+
+.vu-legend {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.legend-zero {
+  color: var(--text-amber);
+}
+
+.legend-clip {
+  color: var(--text-red);
+}
+
+/* ==========================================================================
+   Master Controls Deck
+   ========================================================================== */
+.controls-deck {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1.5rem;
+  align-items: center;
+  background: #111418;
+  border: 1px solid var(--border-metal);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.slider-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.slider-head {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.slider-val {
+  color: var(--amber-studio);
+  font-weight: 800;
+}
+
+.hardware-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: #090b0d;
+  border: 1px solid #232932;
+  outline: none;
+  cursor: pointer;
+}
+
+.hardware-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--amber-studio);
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--amber-glow);
+  border: 1px solid #fff;
+}
+
+.hardware-mute-btn {
+  background: #1c2128;
+  border: 1px solid var(--border-metal-highlight);
+  color: var(--text-primary);
+  border-radius: 6px;
+  padding: 0.75rem 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: all 0.2s ease;
+}
+
+.hardware-mute-btn:hover {
+  background: #28303a;
+}
+
+.hardware-mute-btn.muted {
+  background: rgba(220, 38, 38, 0.2);
+  border-color: var(--red-studio);
+  color: #fca5a5;
+  box-shadow: 0 0 12px var(--red-glow);
+}
+
+/* ==========================================================================
+   Transmission Audit Log
+   ========================================================================== */
+.hardware-clear-btn {
+  background: transparent;
+  border: 1px solid var(--border-metal);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.25rem 0.55rem;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: all 0.15s;
+}
+
+.hardware-clear-btn:hover {
+  background: #252c36;
+  color: var(--text-primary);
+}
+
+.history-container {
+  background: #0f1216;
+  border: 1px solid var(--border-metal);
+  border-radius: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.history-empty {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 2rem 1rem;
+  letter-spacing: 0.04em;
+}
+
+.history-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #1c222b;
+  transition: background-color 0.15s;
+}
+
+.history-row:hover {
+  background-color: #15191f;
+}
+
+.history-row:last-child {
+  border-bottom: none;
+}
+
+.history-left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.history-time-stamp {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.history-speaker {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.history-duration-badge {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--amber-studio);
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   Auxiliary Column: QR Code & Mobile Instructions
+   ========================================================================== */
+.aux-desc {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  margin-bottom: 1.15rem;
+}
+
+.qr-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.qr-well {
+  width: 230px;
+  height: 230px;
+  background: #ffffff;
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid var(--border-metal-highlight);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.qr-well img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.url-display {
+  width: 100%;
+  background: #0d1013;
+  border: 1px solid var(--border-metal);
+  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--amber-studio);
+  word-break: break-all;
+  margin-bottom: 0.75rem;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.hardware-copy-btn {
+  width: 100%;
+  background: #21262d;
+  border: 1px solid var(--border-metal-highlight);
+  color: var(--text-primary);
+  border-radius: 6px;
+  padding: 0.65rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.hardware-copy-btn:hover {
+  background: var(--surface-raised);
+}
+
+/* Guide Steps */
+.guide-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.guide-item {
+  display: flex;
+  gap: 0.75rem;
+  background: #121519;
+  border: 1px solid var(--border-metal);
+  border-radius: 6px;
+  padding: 0.75rem 0.85rem;
+}
+
+.item-num {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--amber-studio);
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background: #1c2128;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.item-text {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.item-text strong {
+  color: var(--text-primary);
+}
+
+.item-text em {
+  color: var(--text-amber);
+  font-style: normal;
+  font-weight: 600;
+}

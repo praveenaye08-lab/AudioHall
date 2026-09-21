@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AetherMic • Interactive Presentation Deck</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <style>
+    :root {
+      --bg: #0d0f11;
+      --surface: #16191d;
+      --card: #21262d;
+      --border: #30363d;
+      --amber: #f59e0b;
+      --amber-light: #fbbf24;
+      --red: #ef4444;
+      --green: #22c55e;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      --font-mono: 'SFMono-Regular', Consolas, Menlo, monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: var(--text);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Presentation Screen 16:9 Frame */
+    .deck-container {
+      width: 95vw;
+      max-width: 1280px;
+      aspect-ratio: 16 / 9;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide {
+      display: none;
+      flex: 1;
+      padding: 3rem 3.5rem;
+      flex-direction: column;
+      justify-content: space-between;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Slide Header */
+    .slide-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+
+    .accent-bar {
+      width: 6px;
+      height: 38px;
+      background: var(--amber);
+      border-radius: 2px;
+    }
+
+    .header-text .cat {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--amber);
+      letter-spacing: 0.1em;
+    }
+
+    .header-text h2 {
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    /* Slide Content Areas */
+    .slide-body {
+      flex: 1;
+      padding: 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Slide 1: Hero */
+    .hero-badge {
+      display: inline-flex;
+      padding: 0.35rem 0.85rem;
+      background: var(--card);
+      border: 1px solid var(--amber);
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--amber);
+      width: fit-content;
+      margin-bottom: 1rem;
+    }
+
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+
+    .hero-sub {
+      font-size: 1.35rem;
+      color: var(--amber-light);
+      margin-top: 0.5rem;
+      font-weight: 600;
+    }
+
+    .hero-desc {
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 850px;
+      margin-top: 1rem;
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-top: 1.75rem;
+    }
+
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+    }
+
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--amber);
+      font-weight: 700;
+    }
+
+    .stat-val {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-top: 0.2rem;
+    }
+
+    /* Grid Layouts for Slides 2, 4, 6 */
+    .cards-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .cards-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-tag {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      width: fit-content;
+      margin-bottom: 0.6rem;
+      background: var(--card);
+      border: 1px solid var(--amber);
+      color: var(--amber);
+    }
+    .card-tag.green { border-color: var(--green); color: var(--green); }
+    .card-tag.red { border-color: var(--red); color: var(--red); }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .card-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      margin-top: 0.5rem;
+    }
+
+    .card-bullets li {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      padding-left: 1rem;
+      position: relative;
+      line-height: 1.35;
+    }
+
+    .card-bullets li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--amber);
+      font-weight: bold;
+    }
+
+    /* Table for Slide 3 */
+    .tech-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      background: var(--surface);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .tech-table th {
+      background: #111418;
+      color: var(--amber);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      text-align: left;
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid var(--border);
+      letter-spacing: 0.05em;
+    }
+
+    .tech-table td {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid #1c222b;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    .tech-table tr:last-child td { border-bottom: none; }
+    .tech-table td.bold { color: var(--text); font-weight: 600; }
+
+    /* Innovation Row for Slide 5 */
+    .inv-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--amber);
+      border-radius: 6px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.85rem;
+    }
+    .inv-card.green { border-left-color: var(--green); }
+    .inv-card.red { border-left-color: var(--red); }
+
+    .inv-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--amber);
+      margin-bottom: 0.35rem;
+    }
+    .inv-card.green .inv-title { color: var(--green); }
+    .inv-card.red .inv-title { color: var(--red); }
+
+    .inv-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .inv-desc strong { color: var(--text); }
+
+    /* Slide Footer Controls */
+    .deck-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      padding: 0.75rem 2rem;
+      background: #111418;
+    }
+
+    .counter {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--amber);
+      font-weight: 700;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .deck-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .deck-btn:hover {
+      background: var(--border);
+      color: #fff;
+    }
+
+    .deck-btn.amber {
+      background: var(--amber);
+      color: #000;
+      border-color: var(--amber);
+    }
+  </style>
+</head>
+<body>
+  <div class="deck-container">
+    <!-- SLIDE 1 -->
+    <div class="slide active" id="slide1">
+      <div class="slide-body">
+        <div class="hero-badge">STUDIO AUDIO TR-100</div>
+        <h1 class="hero-title">AETHERMIC</h1>
+        <div class="hero-sub">Ultra-Low-Latency Local Wi-Fi Walkie-Talkie for Lecture Halls</div>
+        <p class="hero-desc">
+          A high-performance, browser-based push-to-talk audio system operating 100% over the campus local Wi-Fi. Students scan an on-screen QR code on the lecture display to turn their smartphones into wireless broadcast microphones connected directly to the room speakers—with zero external internet dependency.
+        </p>
+
+        <div class="stat-row">
+          <div class="stat-box">
+            <div class="stat-label">ZERO INTERNET</div>
+            <div class="stat-val">100% Offline LAN</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">CONCURRENCY MUTEX</div>
+            <div class="stat-val">Single-Speaker Lock</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">END-TO-END LATENCY</div>
+            <div class="stat-val">&lt; 100ms Glass-to-Ear</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">HARDWARE SECURITY</div>
+            <div class="stat-val">Dynamic Local SSL</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 -->
+    <div class="slide" id="slide2">
+      <div class="slide-header">
+        <div class="accent-bar"></div>
+        <div class="header-text">
+          <div class="cat">SYSTEM ARCHITECTURE</div>
+          <h2>System Architecture & 3-Tier Topology</h2>
+        </div>
+      </div>
+      <div class="slide-body">
+        <div class="cards-grid-3">
+          <div class="card">
+            <div class="card-tag">01. TRANSMITTER</div>
+            <div class="card-title">Student Audio Client (/student)</div>
+            <ul class="card-bullets">
+              <li>Pre-transmission operator name/seat onboarding gate</li>
+              <li>Tactile circular PTT button with physical depression</li>
+              <li>Momentary (Hold) vs Latched (Tap) trigger modes</li>
+              <li>Hardware 24-segment discrete LED VU meter (-30 to +3 dB)</li>
+              <li>Native haptic feedback & radio key/roger sound effects</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <div class="card-tag green">02. MUTEX ENGINE</div>
+            <div class="card-title">Local Node Server (server.js)</div>
+            <ul class="card-bullets">
+              <li>Single-Speaker Concurrency Mutex prevents cross-talk</li>
+              <li>60-second safety watchdog & abrupt disconnect cleanup</li>
+              <li>Dynamic self-signed SSL generator for mobile HTTPS</li>
+              <li>Strict unidirectional binary audio relay to host only</li>
+              <li>Local network IP auto-detection & QR generation</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <div class="card-tag red">03. RECEIVER CONSOLE</div>
+            <div class="card-title">Professor Host Console (/host)</div>
+            <ul class="card-bullets">
+              <li>Prominent illuminated studio ON AIR annunciator</li>
+              <li>Active student callsign in large bold typography</li>
+              <li>60 FPS oscilloscope trace & 30-bar VU peak meter</li>
+              <li>Classroom master gain booster (0%-200%) & mute</li>
+              <li>Live transmission audit log with timestamps & durations</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 -->
+    <div class="slide" id="slide3">
+      <div class="slide-header">
+        <div class="accent-bar"></div>
+        <div class="header-text">
+          <div class="cat">TOOLS & TECHNOLOGY</div>
+          <h2>Technology Stack & Engineering Tools</h2>
+        </div>
+      </div>
+      <div class="slide-body">
+        <table class="tech-table">
+          <thead>
+            <tr>
+              <th>CATEGORY</th>
+              <th>TOOLS / TECHNOLOGIES</th>
+              <th>ROLE IN AETHERMIC</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="bold">Backend Runtime</td>
+              <td class="bold">Node.js, Express</td>
+              <td>Lightweight, event-driven HTTP/HTTPS local application server</td>
+            </tr>
+            <tr>
+              <td class="bold">Real-Time Protocol</td>
+              <td class="bold">Socket.io (WebSockets)</td>
+              <td>Sub-millisecond binary packet relay and state synchronization</td>
+            </tr>
+            <tr>
+              <td class="bold">Audio Engine (DSP)</td>
+              <td class="bold">Web Audio API</td>
+              <td>Microphone capture, 16kHz downsampling, and jitter-free timeline playback</td>
+            </tr>
+            <tr>
+              <td class="bold">Security & TLS</td>
+              <td class="bold">selfsigned (X.509 PKI)</td>
+              <td>Dynamic local SSL generation to satisfy mobile getUserMedia HTTPS rules</td>
+            </tr>
+            <tr>
+              <td class="bold">QR Code Generator</td>
+              <td class="bold">qrcode (Buffer / Data URL)</td>
+              <td>Generates high-contrast projector QR code for instant mobile phone join</td>
+            </tr>
+            <tr>
+              <td class="bold">Frontend Core</td>
+              <td class="bold">HTML5, CSS3, Vanilla JS</td>
+              <td>Zero heavy UI frameworks (&lt;50KB footprint) for instant mobile loading</td>
+            </tr>
+            <tr>
+              <td class="bold">Haptics & Audio FX</td>
+              <td class="bold">Vibration API, Oscillators</td>
+              <td>Native vibration feedback, walkie-talkie key chirps, and roger beeps</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 -->
+    <div class="slide" id="slide4">
+      <div class="slide-header">
+        <div class="accent-bar"></div>
+        <div class="header-text">
+          <div class="cat">OPERATIONAL FLOW</div>
+          <h2>End-to-End Operational Lifecycle</h2>
+        </div>
+      </div>
+      <div class="slide-body">
+        <div class="cards-grid-3" style="margin-bottom: 0.85rem;">
+          <div class="card">
+            <div class="card-tag">STEP 01</div>
+            <div class="card-title">Scan QR & Connect</div>
+            <p class="card-desc">Student joins classroom Wi-Fi and scans projector QR code to access the local HTTPS link.</p>
+          </div>
+          <div class="card">
+            <div class="card-tag">STEP 02</div>
+            <div class="card-title">Operator Onboarding</div>
+            <p class="card-desc">Pre-transmission modal requires Name & Seat No before unlocking mic access. Persisted in localStorage.</p>
+          </div>
+          <div class="card">
+            <div class="card-tag">STEP 03</div>
+            <div class="card-title">PTT Mutex Request</div>
+            <p class="card-desc">Student presses tactile button. Server evaluates lock: grants exclusively or returns line busy tone.</p>
+          </div>
+        </div>
+        <div class="cards-grid-3">
+          <div class="card">
+            <div class="card-tag">STEP 04</div>
+            <div class="card-title">Live Audio Streaming</div>
+            <p class="card-desc">Audio downsampled to 16kHz 16-bit mono linear PCM and relayed as binary WebSocket chunks.</p>
+          </div>
+          <div class="card">
+            <div class="card-tag">STEP 05</div>
+            <div class="card-title">Jitter-Free Playback</div>
+            <p class="card-desc">Host AudioContext schedules chunks seamlessly on timeline. Host visualizer displays waveform & 30-bar VU.</p>
+          </div>
+          <div class="card">
+            <div class="card-tag">STEP 06</div>
+            <div class="card-title">Release & Audit Log</div>
+            <p class="card-desc">Student releases switch ➔ Roger beep plays ➔ Mutex released ➔ Transmission logged with timestamp.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 -->
+    <div class="slide" id="slide5">
+      <div class="slide-header">
+        <div class="accent-bar"></div>
+        <div class="header-text">
+          <div class="cat">CORE INNOVATIONS</div>
+          <h2>Technical Innovations & Problem-Solving</h2>
+        </div>
+      </div>
+      <div class="slide-body">
+        <div class="inv-card">
+          <div class="inv-title">01. Dynamic Local SSL Generator (X.509 PKI)</div>
+          <div class="inv-desc">
+            <strong>CHALLENGE:</strong> Modern mobile browsers (iOS Safari & Chrome) strictly forbid <code>getUserMedia</code> microphone capture over plain HTTP unless on localhost.<br>
+            <strong>SOLUTION:</strong> AetherMic automatically detects the physical network adapter and synthesizes in-memory X.509 certificates with Subject Alternative Names (SAN) matching the host machine local IP.
+          </div>
+        </div>
+
+        <div class="inv-card green">
+          <div class="inv-title">02. Single-Speaker Mutex with 60s Watchdog</div>
+          <div class="inv-desc">
+            <strong>CHALLENGE:</strong> Multiple students transmitting simultaneously causes catastrophic acoustic chaos, echo, and packet collision.<br>
+            <strong>SOLUTION:</strong> Atomic server-side Mutex grants exclusive line access to one speaker. A 60-second safety watchdog and abrupt socket disconnect hook immediately release the lock if a student drops Wi-Fi.
+          </div>
+        </div>
+
+        <div class="inv-card red">
+          <div class="inv-title">03. Downsampled 16kHz PCM Binary Pipeline</div>
+          <div class="inv-desc">
+            <strong>CHALLENGE:</strong> Full WebRTC mesh involves heavy ICE/STUN/TURN signaling, while 48kHz stereo consumes excessive local Wi-Fi bandwidth.<br>
+            <strong>SOLUTION:</strong> Raw Float32 audio is downsampled client-side to 16kHz mono 16-bit linear PCM and pushed over binary WebSockets (~32 KB/s), achieving sub-100ms latency with zero audio drift.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6 -->
+    <div class="slide" id="slide6">
+      <div class="slide-header">
+        <div class="accent-bar"></div>
+        <div class="header-text">
+          <div class="cat">BENEFITS & ADVANTAGES</div>
+          <h2>Key Advantages & Unique Selling Points</h2>
+        </div>
+      </div>
+      <div class="slide-body">
+        <div class="cards-grid-3" style="margin-bottom: 0.85rem;">
+          <div class="card">
+            <div class="card-title">Zero Hardware Cost</div>
+            <p class="card-desc">Leverages smartphones students already own and classroom speakers already on the podium.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">Zero Internet Dependency</div>
+            <p class="card-desc">Operates 100% offline over local Wi-Fi. Unaffected by campus internet drops or slow bandwidth.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">Frictionless Experience</div>
+            <p class="card-desc">No mobile app installation, no App Store downloads, and no user registration required.</p>
+          </div>
+        </div>
+        <div class="cards-grid-3">
+          <div class="card">
+            <div class="card-title">Full Speaker Accountability</div>
+            <p class="card-desc">Professor dashboard logs student names and seat numbers alongside exact speech duration.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">Zero Acoustic Feedback</div>
+            <p class="card-desc">Voice streams strictly to the podium speakers; audio is never fed back to mobile handsets.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">Tactile Industrial UX</div>
+            <p class="card-desc">Hardware-grade interface with mechanical depression, 24-segment LED meter, and native haptics.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7 -->
+    <div class="slide" id="slide7">
+      <div class="slide-header">
+        <div class="accent-bar"></div>
+        <div class="header-text">
+          <div class="cat">LIMITATIONS & ROADMAP</div>
+          <h2>Current Limitations & Future Development</h2>
+        </div>
+      </div>
+      <div class="slide-body">
+        <div class="cards-grid-2">
+          <div class="card" style="border-top: 3px solid var(--red);">
+            <div class="card-tag red">CURRENT LIMITATIONS</div>
+            <ul class="card-bullets">
+              <li><strong>Self-Signed SSL Warning:</strong> Because certs are generated locally, mobile users must tap "Show Details > Visit Website" once on first launch.</li>
+              <li><strong>Same Wi-Fi Subnet Required:</strong> Devices must share the same physical router or VLAN; client isolation (AP isolation) must be disabled.</li>
+              <li><strong>Uncompressed PCM Bandwidth:</strong> 16kHz linear PCM uses ~256 kbps. While light for 1 speaker, compressed codecs are more efficient for large halls.</li>
+            </ul>
+          </div>
+
+          <div class="card" style="border-top: 3px solid var(--green);">
+            <div class="card-tag green">ENGINEERING ROADMAP</div>
+            <ul class="card-bullets">
+              <li><strong>Opus WebAssembly Codec:</strong> Integrate client-side Opus compression to reduce network bandwidth by 75% for 500+ student auditoriums.</li>
+              <li><strong>Live AI Closed Captions:</strong> Incorporate real-time speech-to-text (Whisper.cpp) displaying the student question on the main screen.</li>
+              <li><strong>Orderly Speaker Queueing:</strong> Allow students to enter a virtual waiting line when channel is busy rather than repeatedly tapping.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Presentation Navigation Bar -->
+    <div class="deck-controls">
+      <div class="counter" id="slideCounter">SLIDE 1 / 7</div>
+      <div class="btn-group">
+        <button class="deck-btn" id="prevBtn" onclick="prevSlide()">◀ PREVIOUS</button>
+        <button class="deck-btn" id="nextBtn" onclick="nextSlide()">NEXT ▶</button>
+        <a href="/AetherMic_Presentation.pptx" download class="deck-btn amber" style="text-decoration: none;">DOWNLOAD .PPTX</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 7;
+
+    function showSlide(n) {
+      document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById('slide' + n);
+      if (target) {
+        target.classList.add('active');
+        document.getElementById('slideCounter').textContent = `SLIDE ${n} / ${totalSlides}`;
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        showSlide(currentSlide);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        currentSlide--;
+        showSlide(currentSlide);
+      }
+    }
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevSlide();
+      } else if (e.key.toLowerCase() === 'f') {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+    });
+  </script>
+</body>
+</html>
